@@ -41,6 +41,8 @@ export function InterviewQuestionsNewClient({
     contributor: '',
   });
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const questionsPerPage = 10;
 
   // Fetch questions on mount if not provided
   useEffect(() => {
@@ -124,6 +126,19 @@ export function InterviewQuestionsNewClient({
 
     return result;
   }, [questions, filters, searchQuery]);
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredQuestions.length / questionsPerPage);
+  const paginatedQuestions = useMemo(() => {
+    const startIndex = (currentPage - 1) * questionsPerPage;
+    const endIndex = startIndex + questionsPerPage;
+    return filteredQuestions.slice(startIndex, endIndex);
+  }, [filteredQuestions, currentPage, questionsPerPage]);
+
+  // Reset to page 1 when filters or search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters, searchQuery]);
 
   const handleExport = () => {
     const csv = [
@@ -264,15 +279,54 @@ export function InterviewQuestionsNewClient({
             </AlertDescription>
           </Alert>
         ) : (
-          <div className="space-y-4">
-            {filteredQuestions.map((question, index) => (
-              <InterviewQuestionCard
-                key={`${question.company}-${question.year}-${index}`}
-                question={question}
-                index={index}
-              />
-            ))}
-          </div>
+          <>
+            <div className="space-y-4">
+              {paginatedQuestions.map((question, index) => (
+                <InterviewQuestionCard
+                  key={`${question.company}-${question.year}-${index}`}
+                  question={question}
+                  index={(currentPage - 1) * questionsPerPage + index}
+                />
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-8">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+                
+                <div className="flex gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCurrentPage(page)}
+                      className="min-w-[40px]"
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
 
