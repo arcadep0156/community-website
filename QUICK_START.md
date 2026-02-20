@@ -4,7 +4,7 @@
 
 Your environment files are in the **project root** (same level as `package.json`):
 
-```
+```text
 community-website/
 ├── .env.local          ← Your local config (gitignored)
 ├── .env.example        ← Template for others
@@ -28,7 +28,7 @@ NEXT_PUBLIC_INTERVIEW_REPO_NAME=interview-questions
 NEXT_PUBLIC_INTERVIEW_REPO_BRANCH=main
 ```
 
-### How to Get Your Google Sheets URL:
+### How to Get Your Google Sheets URL
 1. Open your Google Sheet
 2. Click **File** → **Share** → **Publish to web**
 3. Choose **Entire Document** or specific sheet
@@ -39,10 +39,12 @@ NEXT_PUBLIC_INTERVIEW_REPO_BRANCH=main
 ## 🏃 Running the Project
 
 ### Development
+
 ```bash
 npm run dev
 ```
-Visit: http://localhost:3000
+
+Visit: <http://localhost:3000>
 
 ### Production Build
 ```bash
@@ -107,10 +109,12 @@ npm run typecheck
 ## 🔍 Testing Your Changes
 
 ### 1. Check Interview Questions Page
+
 ```bash
 npm run dev
 ```
-Visit: http://localhost:3000/interview-questions
+
+Visit: <http://localhost:3000/interview-questions>
 
 **Test**:
 - ✅ Page loads
@@ -120,7 +124,8 @@ Visit: http://localhost:3000/interview-questions
 - ✅ Refresh works
 
 ### 2. Check Homepage
-Visit: http://localhost:3000
+
+Visit: <http://localhost:3000>
 
 **Test**:
 - ✅ Questions appear in terminal animation
@@ -128,7 +133,8 @@ Visit: http://localhost:3000
 - ✅ No console errors
 
 ### 3. Check Jobs Page
-Visit: http://localhost:3000/jobs
+
+Visit: <http://localhost:3000/jobs>
 
 **Test**:
 - ✅ Jobs load from Google Sheets
@@ -137,12 +143,14 @@ Visit: http://localhost:3000/jobs
 ## 🐛 Common Issues & Fixes
 
 ### Issue: "No questions available"
+
 **Cause**: GitHub repository doesn't exist or JSON file not found
 
 **Fix**:
-1. Check if repo exists: https://github.com/arcadep0156/interview-questions
+
+1. Check if repository exists: <https://github.com/arcadep0156/interview-questions>
 2. Verify JSON file path: `/index.json`
-3. Make sure repo is public
+3. Make sure repository is public
 
 **Temporary**: App works fine, just shows empty state
 
@@ -195,17 +203,19 @@ npm run build
 | Service Worker | ✅ Updated | Smart caching |
 | Build | ✅ Passing | TypeScript OK |
 
-## 🎉 You're All Set!
+## 🎉 You're All Set
 
 Your GitHub JSON integration is complete and production-ready!
 
-### Next Steps:
+### Next Steps
+
 1. ✅ Test locally: `npm run dev`
 2. ✅ Build for production: `npm run build`
 3. ✅ Deploy to your hosting platform
 4. ✅ Monitor for errors and performance
 
-### Need Help?
+### Need Help
+
 - Check `.kiro/` directory for detailed documentation
 - Review code comments in modified files
 - Check console for error messages

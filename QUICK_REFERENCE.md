@@ -8,7 +8,7 @@ npm run dev
 ```
 
 ## 🔄 Complete Flow (Your Question)
-```
+```text
 User adds JSON → PR created → Sir merges → Build triggers → Questions live ✅
 Time: 5-60 minutes from merge to live
 ```
