@@ -58,15 +58,17 @@ export function InterviewQuestionCard({ question, index }: InterviewQuestionCard
       </CardHeader>
 
       <CardContent className={cn("pt-0 space-y-3", !isExpanded && "pb-3")}>
-        <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
           <div className="flex items-center gap-1">
             <Briefcase className="h-3.5 w-3.5" />
             <span>{question.role}</span>
           </div>
+          <span>|</span>
           <div className="flex items-center gap-1">
             <Clock className="h-3.5 w-3.5" />
             <span>{question.experience}</span>
           </div>
+          <span>|</span>
           <div className="flex items-center gap-1">
             <User className="h-3.5 w-3.5" />
             {typeof question.contributor === 'string' ? (
@@ -75,14 +77,17 @@ export function InterviewQuestionCard({ question, index }: InterviewQuestionCard
               <div className="flex items-center gap-2">
                 <span className="text-primary">{question.contributor.name || question.contributor.github}</span>
                 {question.contributor.linkedin && (
-                  <a 
-                    href={question.contributor.linkedin} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline text-xs"
-                  >
-                    LinkedIn
-                  </a>
+                  <>
+                    <span>|</span>
+                    <a 
+                      href={question.contributor.linkedin} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline text-xs"
+                    >
+                      LinkedIn
+                    </a>
+                  </>
                 )}
               </div>
             )}
@@ -105,16 +110,15 @@ export function InterviewQuestionCard({ question, index }: InterviewQuestionCard
                   <strong className="text-primary">{question.contributor.name || question.contributor.github}</strong>
                   {question.contributor.linkedin && (
                     <>
-                      {' '}(
+                      {' | '}
                       <a 
                         href={question.contributor.linkedin} 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline"
                       >
-                        LinkedIn Profile
+                        LinkedIn
                       </a>
-                      )
                     </>
                   )}
                 </>

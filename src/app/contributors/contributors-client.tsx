@@ -106,6 +106,36 @@ export function ContributorsClient() {
     return <TrendingUp className="h-6 w-6 text-muted-foreground" />;
   };
 
+  const renderSocialLinks = (contributor: Contributor, size: 'sm' | 'md' = 'sm') => {
+    const iconClass = size === 'sm' ? 'h-3 w-3' : 'h-4 w-4';
+    return (
+      <div className="flex items-center gap-2">
+        <a
+          href={`https://github.com/${contributor.github.replace('@', '')}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"
+        >
+          <Github className={iconClass} />
+          {contributor.github}
+        </a>
+        {contributor.linkedin && (
+          <>
+            <span className="text-muted-foreground">|</span>
+            <a
+              href={contributor.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-muted-foreground hover:text-primary"
+            >
+              LinkedIn
+            </a>
+          </>
+        )}
+      </div>
+    );
+  };
+
   const getRankStyle = (rank: number) => {
     if (rank === 1) return 'bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border-yellow-500/50';
     if (rank === 2) return 'bg-gradient-to-r from-gray-400/20 to-gray-500/20 border-gray-400/50';
@@ -164,25 +194,7 @@ export function ContributorsClient() {
                 <div className="mb-3 flex justify-center">{getMedalIcon(2)}</div>
                 <h3 className="mb-2 text-xl font-bold">{filteredContributors[1].name}</h3>
                 <div className="mb-3 flex justify-center gap-2">
-                  <a
-                    href={`https://github.com/${filteredContributors[1].github.replace('@', '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"
-                  >
-                    <Github className="h-4 w-4" />
-                    {filteredContributors[1].github}
-                  </a>
-                  {filteredContributors[1].linkedin && (
-                    <a
-                      href={filteredContributors[1].linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"
-                    >
-                      <Linkedin className="h-4 w-4" />
-                    </a>
-                  )}
+                  {renderSocialLinks(filteredContributors[1], 'md')}
                 </div>
                 <div className="text-3xl font-bold text-primary">{filteredContributors[1].count}</div>
                 <p className="text-sm text-muted-foreground">questions</p>
@@ -201,25 +213,7 @@ export function ContributorsClient() {
                 </div>
                 <h3 className="mb-2 text-2xl font-bold">{filteredContributors[0].name}</h3>
                 <div className="mb-4 flex justify-center gap-2">
-                  <a
-                    href={`https://github.com/${filteredContributors[0].github.replace('@', '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"
-                  >
-                    <Github className="h-4 w-4" />
-                    {filteredContributors[0].github}
-                  </a>
-                  {filteredContributors[0].linkedin && (
-                    <a
-                      href={filteredContributors[0].linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"
-                    >
-                      <Linkedin className="h-4 w-4" />
-                    </a>
-                  )}
+                  {renderSocialLinks(filteredContributors[0], 'md')}
                 </div>
                 <div className="text-4xl font-bold text-primary">{filteredContributors[0].count}</div>
                 <p className="text-sm text-muted-foreground">questions</p>
@@ -235,25 +229,7 @@ export function ContributorsClient() {
                 <div className="mb-3 flex justify-center">{getMedalIcon(3)}</div>
                 <h3 className="mb-2 text-xl font-bold">{filteredContributors[2].name}</h3>
                 <div className="mb-3 flex justify-center gap-2">
-                  <a
-                    href={`https://github.com/${filteredContributors[2].github.replace('@', '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"
-                  >
-                    <Github className="h-4 w-4" />
-                    {filteredContributors[2].github}
-                  </a>
-                  {filteredContributors[2].linkedin && (
-                    <a
-                      href={filteredContributors[2].linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"
-                    >
-                      <Linkedin className="h-4 w-4" />
-                    </a>
-                  )}
+                  {renderSocialLinks(filteredContributors[2], 'md')}
                 </div>
                 <div className="text-3xl font-bold text-primary">{filteredContributors[2].count}</div>
                 <p className="text-sm text-muted-foreground">questions</p>
@@ -305,27 +281,7 @@ export function ContributorsClient() {
                           </div>
                           <div>
                             <h3 className="font-semibold">{contributor.name}</h3>
-                            <div className="flex items-center gap-2">
-                              <a
-                                href={`https://github.com/${contributor.github.replace('@', '')}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"
-                              >
-                                <Github className="h-3 w-3" />
-                                {contributor.github}
-                              </a>
-                              {contributor.linkedin && (
-                                <a
-                                  href={contributor.linkedin}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"
-                                >
-                                  <Linkedin className="h-3 w-3" />
-                                </a>
-                              )}
-                            </div>
+                            {renderSocialLinks(contributor, 'sm')}
                           </div>
                         </div>
                         <div className="text-right">
