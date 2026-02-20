@@ -23,6 +23,7 @@ const navLinks: NavLink[] = [
   { href: '/interview-questions', label: 'Interview Questions', icon: FileQuestion },
   { href: '/jobs', label: 'Jobs', icon: Briefcase },
   { href: '/heroes', label: 'Heroes', icon: Trophy },
+  { href: '/contributors', label: 'Contributors', icon: Trophy },
 ];
 
 export function Navbar() {
