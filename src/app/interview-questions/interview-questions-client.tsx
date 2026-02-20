@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
+import Link from 'next/link';
 import { Search, AlertCircle, Download, RefreshCw, Loader2, Award } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -193,10 +194,10 @@ export function InterviewQuestionsNewClient({
               Export CSV
             </Button>
             <Button asChild variant="default" className="gap-2">
-              <a href="/contributors">
+              <Link href="/contributors">
                 <Award className="h-4 w-4" />
                 Contributors
-              </a>
+              </Link>
             </Button>
           </div>
         </div>
