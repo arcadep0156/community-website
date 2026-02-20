@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tws-community-v4'; // Updated version for GitHub CSV migration
+const CACHE_NAME = 'tws-community-v4'; // Updated version for GitHub JSON migration
 const urlsToCache = [
   '/',
   '/jobs',
@@ -24,7 +24,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   
-  // Network first strategy for GitHub CSV data and API calls
+  // Network first strategy for GitHub JSON data and API calls
   if (url.hostname === 'raw.githubusercontent.com' || 
       url.pathname.includes('/api/') ||
       url.pathname === '/interview-questions') {

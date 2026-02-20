@@ -16,7 +16,7 @@ import { ErrorBoundary } from '@/components/error-boundary';
 
 export default async function Home() {
   // Fetch data at build time
-  // Interview questions from GitHub CSV, Jobs from Google Sheets
+  // Interview questions from GitHub JSON, Jobs from Google Sheets
   const {
     interviewQuestions,
     jobs: allJobs,

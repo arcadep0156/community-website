@@ -8,10 +8,10 @@ const DEFAULT_JOBS_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   
-  // Google Sheets - Jobs only (Interview questions now use GitHub CSV)
+  // Google Sheets - Jobs only (Interview questions now use GitHub JSON)
   JOBS_SHEET_URL: z.string().url().min(1).default(DEFAULT_JOBS_SHEET_URL),
   
-  // GitHub CSV - Interview Questions (public, no auth needed)
+  // GitHub JSON - Interview Questions (public, no auth needed)
   NEXT_PUBLIC_INTERVIEW_REPO_OWNER: z.string().default('TrainWithShubham'),
   NEXT_PUBLIC_INTERVIEW_REPO_NAME: z.string().default('interview-questions'),
   NEXT_PUBLIC_INTERVIEW_REPO_BRANCH: z.string().default('main'),
@@ -51,7 +51,7 @@ export function validateEnvironment(): { isValid: boolean; errors: string[]; war
       warnings.push('JOBS_SHEET_URL: Using production default value');
     }
     
-    // Check GitHub CSV configuration
+    // Check GitHub JSON configuration
     if (!process.env.NEXT_PUBLIC_INTERVIEW_REPO_OWNER) {
       warnings.push('NEXT_PUBLIC_INTERVIEW_REPO_OWNER: Using default (TrainWithShubham)');
     }

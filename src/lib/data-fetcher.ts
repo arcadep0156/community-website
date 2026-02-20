@@ -12,7 +12,7 @@ import { getJobs } from '@/services/google-sheets';
 import type { Job } from '@/data/jobs';
 
 export interface HomePageData {
-  interviewQuestions: InterviewQuestion[]; // Consolidated from GitHub CSV
+  interviewQuestions: InterviewQuestion[]; // Consolidated from GitHub JSON
   jobs: Job[];
 }
 

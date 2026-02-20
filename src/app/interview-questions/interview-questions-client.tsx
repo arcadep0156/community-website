@@ -344,7 +344,7 @@ export function InterviewQuestionsNewClient({
           >
             Submit a Pull Request on GitHub
           </a>
-          {' '}with your questions in CSV format.
+          {' '}with your questions in JSON format.
         </AlertDescription>
       </Alert>
       </>
