@@ -48,7 +48,7 @@ export async function getHomePageData(): Promise<HomePageData> {
   
   try {
     console.log('[Build] Fetching homepage data...');
-    console.log('[Build] - Interview Questions: GitHub CSV');
+    console.log('[Build] - Interview Questions: GitHub JSON');
     console.log('[Build] - Jobs: Google Sheets');
     
     const [
