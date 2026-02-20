@@ -1,4 +1,4 @@
-# 🚀 Quick Start Guide - GitHub CSV Integration
+# 🚀 Quick Start Guide - GitHub JSON Integration
 
 ## 📍 Where Are My Environment Files?
 
@@ -58,7 +58,7 @@ npm run typecheck
 ## 📁 Key Files Modified
 
 ### Services
-- `src/services/github-csv.ts` - Fetches interview questions from GitHub
+- `src/lib/data-fetcher.ts` - Fetches interview questions from GitHub JSON
 - `src/services/google-sheets.ts` - Fetches jobs from Google Sheets (only)
 
 ### Configuration
@@ -81,7 +81,7 @@ npm run typecheck
 
 ### Priority 1: Core Migration ✅
 - Removed Google Sheets for interview questions
-- Now uses GitHub CSV repository
+- Now uses GitHub JSON repository
 - Cleaner, more maintainable code
 
 ### Priority 2: Performance ✅
@@ -137,11 +137,11 @@ Visit: http://localhost:3000/jobs
 ## 🐛 Common Issues & Fixes
 
 ### Issue: "No questions available"
-**Cause**: GitHub repository doesn't exist or CSV file not found
+**Cause**: GitHub repository doesn't exist or JSON file not found
 
 **Fix**:
-1. Check if repo exists: https://github.com/TrainWithShubham/interview-questions
-2. Verify CSV file path: `/devops/interview-questions.csv`
+1. Check if repo exists: https://github.com/arcadep0156/interview-questions
+2. Verify JSON file path: `/index.json`
 3. Make sure repo is public
 
 **Temporary**: App works fine, just shows empty state
@@ -182,7 +182,7 @@ npm run build
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| Interview Questions | ✅ Working | GitHub CSV |
+| Interview Questions | ✅ Working | GitHub JSON |
 | Jobs | ✅ Working | Google Sheets |
 | Homepage | ✅ Working | Both sources |
 | Search | ✅ Optimized | Fuse.js |
@@ -197,7 +197,7 @@ npm run build
 
 ## 🎉 You're All Set!
 
-Your GitHub CSV integration is complete and production-ready!
+Your GitHub JSON integration is complete and production-ready!
 
 ### Next Steps:
 1. ✅ Test locally: `npm run dev`
@@ -206,7 +206,7 @@ Your GitHub CSV integration is complete and production-ready!
 4. ✅ Monitor for errors and performance
 
 ### Need Help?
-- Check `MIGRATION_COMPLETE.md` for detailed documentation
+- Check `.kiro/` directory for detailed documentation
 - Review code comments in modified files
 - Check console for error messages
 

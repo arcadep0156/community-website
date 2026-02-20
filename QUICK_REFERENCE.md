@@ -9,7 +9,7 @@ npm run dev
 
 ## 🔄 Complete Flow (Your Question)
 ```
-User adds CSV → PR created → Sir merges → Build triggers → Questions live ✅
+User adds JSON → PR created → Sir merges → Build triggers → Questions live ✅
 Time: 5-60 minutes from merge to live
 ```
 
@@ -21,23 +21,22 @@ Time: 5-60 minutes from merge to live
 # Used in:
 src/lib/env.ts              # Reads variables
 src/services/google-sheets.ts   # Uses JOBS_SHEET_URL
-src/services/github-csv.ts      # Uses NEXT_PUBLIC_INTERVIEW_REPO_*
+src/lib/data-fetcher.ts      # Fetches interview questions from GitHub JSON
 ```
 
 ## ✅ What's Fixed
 - ✅ Light mode text visibility (alert text now visible)
 - ✅ Theme consistency (matches overall design)
 - ✅ Environment files (documented and explained)
-- ✅ README.md (updated with GitHub CSV info)
+- ✅ README.md (updated with GitHub JSON info)
 - ✅ CONTRIBUTING.md (updated with workflow)
 
 ## 📚 Documentation Created
-1. `MIGRATION_COMPLETE.md` - Technical details
+1. `.kiro/` - Complete project documentation
 2. `QUICK_START.md` - Quick guide
 3. `TESTING_GUIDE.md` - How to test
-4. `WORKFLOW.md` - PR and deployment flow
-5. `ENV_FILES_EXPLAINED.md` - Environment setup
-6. `FINAL_SUMMARY.md` - Complete summary
+4. `ENV_FILES_EXPLAINED.md` - Environment setup
+5. `FINAL_SUMMARY.md` - Complete summary
 
 ## 🚀 Deploy Checklist
 ```bash
@@ -55,7 +54,7 @@ npm run build      # ✅ Passing
 
 ## 📞 Need Help?
 - `TESTING_GUIDE.md` - Testing instructions
-- `WORKFLOW.md` - Complete flow explanation
+- `.kiro/` - Complete documentation
 - `ENV_FILES_EXPLAINED.md` - Environment setup
 - Console (F12) - Check for errors
 
