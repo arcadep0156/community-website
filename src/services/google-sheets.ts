@@ -1,8 +1,8 @@
 /**
  * Google Sheets Service - Jobs Only
  * 
- * Note: Interview questions have been migrated to GitHub CSV.
- * See src/services/github-csv.ts for interview question data.
+ * Note: Interview questions have been migrated to GitHub JSON.
+ * See src/services/github-json.ts for interview question data.
  * 
  * This service now only handles Jobs data from Google Sheets.
  */

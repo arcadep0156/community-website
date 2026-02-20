@@ -2,12 +2,12 @@
  * Data Fetcher - Homepage Data Aggregation
  * 
  * Fetches data from multiple sources for the homepage:
- * - Interview Questions: GitHub CSV (src/services/github-csv.ts)
+ * - Interview Questions: GitHub JSON (src/services/github-json.ts)
  * - Jobs: Google Sheets (src/services/google-sheets.ts)
  */
 
 import { trackError, trackPerformance } from './monitoring';
-import { getAllInterviewQuestions, type InterviewQuestion } from '@/services/github-csv';
+import { getAllInterviewQuestions, type InterviewQuestion } from '@/services/github-json';
 import { getJobs } from '@/services/google-sheets';
 import type { Job } from '@/data/jobs';
 

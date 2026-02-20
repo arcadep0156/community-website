@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
-import { Search, AlertCircle, Download, RefreshCw, Loader2 } from 'lucide-react';
+import { Search, AlertCircle, Download, RefreshCw, Loader2, Award } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { InterviewQuestionCard } from '@/components/interview/interview-question-card';
 import { QuestionFilters, type FilterState } from '@/components/interview/question-filters';
-import type { InterviewQuestion } from '@/services/github-csv';
-import { getAllInterviewQuestions, getFilterOptions } from '@/services/github-csv';
+import type { InterviewQuestion } from '@/services/github-json';
+import { getAllInterviewQuestions, getFilterOptions } from '@/services/github-json';
 import Fuse from 'fuse.js';
 
 interface InterviewQuestionsNewClientProps {
@@ -102,7 +102,12 @@ export function InterviewQuestionsNewClient({
       result = result.filter(q => q.topic === filters.topic);
     }
     if (filters.contributor) {
-      result = result.filter(q => q.contributor === filters.contributor);
+      result = result.filter(q => {
+        const contributorGithub = typeof q.contributor === 'string' 
+          ? q.contributor 
+          : q.contributor.github;
+        return contributorGithub === filters.contributor;
+      });
     }
 
     // Apply search using memoized Fuse instance (performance optimization)
@@ -121,10 +126,25 @@ export function InterviewQuestionsNewClient({
 
   const handleExport = () => {
     const csv = [
-      ['Company', 'Year', 'Role', 'Experience', 'Topic', 'Question', 'Contributor'].join(','),
-      ...filteredQuestions.map(q =>
-        [q.company, q.year, q.role, q.experience, q.topic, `"${q.question.replace(/"/g, '""')}"`, q.contributor].join(',')
-      ),
+      ['Company', 'Year', 'Role', 'Experience', 'Topic', 'Question', 'Contributor', 'LinkedIn'].join(','),
+      ...filteredQuestions.map(q => {
+        const contributorName = typeof q.contributor === 'string' 
+          ? q.contributor 
+          : (q.contributor.name || q.contributor.github);
+        const contributorLinkedIn = typeof q.contributor === 'string' 
+          ? '' 
+          : (q.contributor.linkedin || '');
+        return [
+          q.company, 
+          q.year, 
+          q.role, 
+          q.experience, 
+          q.topic, 
+          `"${q.question.replace(/"/g, '""')}"`, 
+          contributorName,
+          contributorLinkedIn
+        ].join(',');
+      }),
     ].join('\n');
 
     const blob = new Blob([csv], { type: 'text/csv' });
@@ -171,6 +191,12 @@ export function InterviewQuestionsNewClient({
             <Button onClick={handleExport} variant="outline" className="gap-2">
               <Download className="h-4 w-4" />
               Export CSV
+            </Button>
+            <Button asChild variant="default" className="gap-2">
+              <a href="/contributors">
+                <Award className="h-4 w-4" />
+                Contributors
+              </a>
             </Button>
           </div>
         </div>

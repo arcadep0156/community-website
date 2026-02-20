@@ -1,0 +1,183 @@
+name: Validate Interview Questions
+
+on:
+  pull_request:
+    paths:
+      - 'data/**/*.json'
+      - 'index.json'
+      - 'meta/**/*.json'
+  push:
+    branches:
+      - main
+    paths:
+      - 'data/**/*.json'
+      - 'index.json'
+
+jobs:
+  validate:
+    name: Validate JSON Schema
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install dependencies
+        run: npm install -g ajv-cli
+      
+      - name: Validate question files against schema
+        run: |
+          echo "🔍 Validating question files..."
+          for file in data/*/*.json; do
+            if [ -f "$file" ]; then
+              echo "Validating: $file"
+              ajv validate -s meta/schema.json -d "$file" --strict=false
+            fi
+          done
+      
+      - name: Validate index.json structure
+        run: |
+          echo "🔍 Validating index.json..."
+          node -e "
+            const fs = require('fs');
+            const index = JSON.parse(fs.readFileSync('index.json', 'utf8'));
+            
+            // Check required fields
+            if (!index.version || !index.files || !index.metadata) {
+              console.error('❌ index.json missing required fields');
+              process.exit(1);
+            }
+            
+            // Validate files exist
+            let errors = 0;
+            index.files.forEach(file => {
+              if (!fs.existsSync(file.path)) {
+                console.error(\`❌ File not found: \${file.path}\`);
+                errors++;
+              }
+            });
+            
+            if (errors > 0) {
+              console.error(\`❌ Found \${errors} missing files\`);
+              process.exit(1);
+            }
+            
+            console.log('✅ index.json is valid');
+          "
+      
+      - name: Check for duplicate question IDs
+        run: |
+          echo "🔍 Checking for duplicate IDs..."
+          node -e "
+            const fs = require('fs');
+            const glob = require('glob');
+            
+            const ids = new Set();
+            let duplicates = 0;
+            
+            const files = glob.sync('data/*/*.json');
+            files.forEach(file => {
+              const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+              data.questions.forEach(q => {
+                if (ids.has(q.id)) {
+                  console.error(\`❌ Duplicate ID found: \${q.id} in \${file}\`);
+                  duplicates++;
+                } else {
+                  ids.add(q.id);
+                }
+              });
+            });
+            
+            if (duplicates > 0) {
+              console.error(\`❌ Found \${duplicates} duplicate IDs\`);
+              process.exit(1);
+            }
+            
+            console.log(\`✅ No duplicate IDs found (\${ids.size} unique questions)\`);
+          "
+      
+      - name: Validate topics against allowed list
+        run: |
+          echo "🔍 Validating topics..."
+          node -e "
+            const fs = require('fs');
+            const glob = require('glob');
+            
+            const allowedTopics = JSON.parse(fs.readFileSync('meta/topics.json', 'utf8')).topics;
+            const topicsSet = new Set(allowedTopics.map(t => t.toLowerCase()));
+            
+            let errors = 0;
+            const files = glob.sync('data/*/*.json');
+            
+            files.forEach(file => {
+              const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+              data.questions.forEach(q => {
+                if (!topicsSet.has(q.topic.toLowerCase())) {
+                  console.error(\`❌ Invalid topic '\${q.topic}' in \${file} (ID: \${q.id})\`);
+                  errors++;
+                }
+              });
+            });
+            
+            if (errors > 0) {
+              console.error(\`❌ Found \${errors} invalid topics\`);
+              console.log('Allowed topics:', allowedTopics.join(', '));
+              process.exit(1);
+            }
+            
+            console.log('✅ All topics are valid');
+          "
+      
+      - name: Validate question quality
+        run: |
+          echo "🔍 Checking question quality..."
+          node -e "
+            const fs = require('fs');
+            const glob = require('glob');
+            
+            let warnings = 0;
+            const files = glob.sync('data/*/*.json');
+            
+            files.forEach(file => {
+              const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+              data.questions.forEach(q => {
+                // Check minimum question length
+                if (q.question.length < 20) {
+                  console.warn(\`⚠️  Short question in \${file} (ID: \${q.id}): \${q.question.substring(0, 50)}...\`);
+                  warnings++;
+                }
+                
+                // Check for proper punctuation
+                if (!q.question.trim().endsWith('?') && !q.question.trim().endsWith('.')) {
+                  console.warn(\`⚠️  Missing punctuation in \${file} (ID: \${q.id})\`);
+                  warnings++;
+                }
+              });
+            });
+            
+            if (warnings > 0) {
+              console.log(\`⚠️  Found \${warnings} quality warnings (non-blocking)\`);
+            } else {
+              console.log('✅ All questions meet quality standards');
+            }
+          "
+      
+      - name: Summary
+        if: success()
+        run: |
+          echo "✅ All validations passed!"
+          echo ""
+          echo "📊 Statistics:"
+          node -e "
+            const fs = require('fs');
+            const index = JSON.parse(fs.readFileSync('index.json', 'utf8'));
+            console.log(\`   Total Questions: \${index.totalQuestions}\`);
+            console.log(\`   Companies: \${index.metadata.companies.length}\`);
+            console.log(\`   Years: \${index.metadata.years.length}\`);
+            console.log(\`   Topics: \${index.metadata.topics.length}\`);
+          "

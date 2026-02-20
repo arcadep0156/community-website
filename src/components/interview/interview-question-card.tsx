@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import type { InterviewQuestion } from '@/services/github-csv';
+import type { InterviewQuestion } from '@/services/github-json';
 
 interface InterviewQuestionCardProps {
   question: InterviewQuestion;
@@ -69,7 +69,23 @@ export function InterviewQuestionCard({ question, index }: InterviewQuestionCard
           </div>
           <div className="flex items-center gap-1">
             <User className="h-3.5 w-3.5" />
-            <span className="text-primary">{question.contributor}</span>
+            {typeof question.contributor === 'string' ? (
+              <span className="text-primary">{question.contributor}</span>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="text-primary">{question.contributor.name || question.contributor.github}</span>
+                {question.contributor.linkedin && (
+                  <a 
+                    href={question.contributor.linkedin} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline text-xs"
+                  >
+                    LinkedIn
+                  </a>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -81,7 +97,29 @@ export function InterviewQuestionCard({ question, index }: InterviewQuestionCard
               <strong>{question.experience}</strong> of experience.
             </p>
             <p className="text-sm text-muted-foreground italic mt-2">
-              Contributed by <strong className="text-primary">{question.contributor}</strong> in {question.year}.
+              Contributed by{' '}
+              {typeof question.contributor === 'string' ? (
+                <strong className="text-primary">{question.contributor}</strong>
+              ) : (
+                <>
+                  <strong className="text-primary">{question.contributor.name || question.contributor.github}</strong>
+                  {question.contributor.linkedin && (
+                    <>
+                      {' '}(
+                      <a 
+                        href={question.contributor.linkedin} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        LinkedIn Profile
+                      </a>
+                      )
+                    </>
+                  )}
+                </>
+              )}{' '}
+              in {question.year}.
             </p>
           </div>
         )}

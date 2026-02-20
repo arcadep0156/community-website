@@ -7,8 +7,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { InterviewQuestionCard } from '@/components/interview/interview-question-card';
 import { QuestionFilters, type FilterState } from '@/components/interview/question-filters';
-import type { InterviewQuestion } from '@/services/github-csv';
-import { getAllInterviewQuestions, getFilterOptions } from '@/services/github-csv';
+import type { InterviewQuestion } from '@/services/github-json';
+import { getAllInterviewQuestions, getFilterOptions } from '@/services/github-json';
 import Fuse from 'fuse.js';
 
 interface InterviewQuestionsNewClientProps {

@@ -1,5 +1,5 @@
 import { InterviewQuestionsNewClient } from './interview-questions-client';
-import { getAllInterviewQuestions, getFilterOptions } from '@/services/github-csv';
+import { getAllInterviewQuestions, getFilterOptions } from '@/services/github-json';
 import { Metadata } from 'next';
 import { ErrorBoundary } from '@/components/error-boundary';
 

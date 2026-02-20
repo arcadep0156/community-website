@@ -139,7 +139,7 @@ src/
 │   └── utils.ts          # Shared utilities
 ├── services/             # External service wrappers
 │   ├── google-sheets.ts  # Google Sheets CSV fetching (Jobs)
-│   └── github-csv.ts     # GitHub CSV fetching (Interview Questions)
+│   └── github-json.ts    # GitHub JSON fetching (Interview Questions)
 └── data/                 # Type definitions & static data
 ```
 

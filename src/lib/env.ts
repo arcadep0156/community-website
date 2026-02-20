@@ -68,7 +68,7 @@ export function validateEnvironment(): { isValid: boolean; errors: string[]; war
 }
 
 // Helper function to get sheet URLs with type safety
-// Note: Interview questions now use GitHub CSV (see src/services/github-csv.ts)
+// Note: Interview questions now use GitHub JSON (see src/services/github-json.ts)
 export function getSheetUrls() {
   return {
     jobs: env.JOBS_SHEET_URL, // Only Jobs still uses Google Sheets
