@@ -3,9 +3,9 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   // Static export configuration for GitHub Pages
   output: 'export',
-  // Required for GitHub Pages deployment (only in production)
-  basePath: process.env.NODE_ENV === 'production' ? '/community-website' : '',
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/community-website/' : '',
+  // basePath not needed when using custom domain (community.trainwithshubham.com)
+  // basePath: process.env.NODE_ENV === 'production' ? '/community-website' : '',
+  // assetPrefix: process.env.NODE_ENV === 'production' ? '/community-website/' : '',
   
   // Enable proper error checking in production
   typescript: {
