@@ -27,7 +27,7 @@ export default async function Home() {
   const questionSnippets = interviewQuestions.slice(0, 6).map(q => ({
     question: q.question,
     answer: `Asked at ${q.company} for ${q.role} position (${q.experience})`,
-    author: q.contributor,
+    author: typeof q.contributor === 'string' ? q.contributor : q.contributor?.name || q.contributor?.github,
   }));
   
   // Show all jobs
