@@ -1,6 +1,6 @@
-<div align="center">
-
 # 🚀 TrainWithShubham Community Hub
+
+<div align="center">
 
 **Empowering DevOps Engineers, Cloud Practitioners & DevSecOps Enthusiasts**
 
@@ -119,7 +119,7 @@ graph TB
 
 ### Project Structure
 
-```
+```text
 src/
 ├── app/                    # Next.js App Router (pages + layouts)
 │   ├── events/            # Community events calendar
@@ -145,7 +145,7 @@ src/
 
 ### Data Flow
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    Build Time (GitHub Actions)               │
 ├─────────────────────────────────────────────────────────────┤
@@ -241,7 +241,7 @@ We welcome contributions from the community! Whether you're fixing bugs, adding 
 
 We use [Conventional Commits](https://www.conventionalcommits.org/) for clear, semantic commit history:
 
-```
+```text
 type(scope): brief description
 
 [optional body]

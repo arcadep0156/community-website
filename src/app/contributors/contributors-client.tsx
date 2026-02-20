@@ -21,24 +21,25 @@ export function ContributorsClient() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const getMockData = (): ContributorsData => ({
+    version: 'v1',
+    lastUpdated: new Date().toISOString(),
+    totalContributors: 3,
+    contributors: [
+      { name: 'Test User', github: '@testuser', count: 5 },
+      { name: 'Demo Contributor', github: '@demo', count: 3 },
+      { name: 'Sample User', github: '@sample', count: 2 },
+    ]
+  });
+
   useEffect(() => {
     console.log('Fetching contributors from GitHub...');
     fetch('https://raw.githubusercontent.com/arcadep0156/interview-questions/main/contributors.json')
       .then(res => {
         console.log('Response status:', res.status);
         if (!res.ok) {
-          // Fallback to mock data for local testing
           console.warn('Using mock data for local testing');
-          return {
-            version: 'v1',
-            lastUpdated: new Date().toISOString(),
-            totalContributors: 3,
-            contributors: [
-              { name: 'Test User', github: '@testuser', count: 5 },
-              { name: 'Demo Contributor', github: '@demo', count: 3 },
-              { name: 'Sample User', github: '@sample', count: 2 },
-            ]
-          };
+          return getMockData();
         }
         return res.json();
       })
@@ -49,17 +50,7 @@ export function ContributorsClient() {
       })
       .catch(err => {
         console.error('Error fetching contributors:', err);
-        // Use mock data on error
-        setData({
-          version: 'v1',
-          lastUpdated: new Date().toISOString(),
-          totalContributors: 3,
-          contributors: [
-            { name: 'Test User', github: '@testuser', count: 5 },
-            { name: 'Demo Contributor', github: '@demo', count: 3 },
-            { name: 'Sample User', github: '@sample', count: 2 },
-          ]
-        });
+        setData(getMockData());
         setLoading(false);
       });
   }, []);
