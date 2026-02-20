@@ -5,6 +5,7 @@
 - **Next.js 15** (App Router) with React 18
 - **TypeScript 5** (strict mode enabled)
 - **Node.js** (ES2017 target)
+- **Static Export** for GitHub Pages deployment
 
 ## UI & Styling
 
@@ -16,52 +17,63 @@
 
 ## State & Data
 
-- **SWR** for client-side data fetching
+- **Server-side data fetching** at build time
 - **React Hook Form** + Zod for forms and validation
-- **LRU Cache** for server-side caching
-- **Firebase** for authentication
+- **Client-side state** with React hooks
 
 ## External Services
 
-- **Google Sheets API** (data source)
+- **GitHub API** (Octokit for project metadata and interview questions JSON)
 - **Google Calendar API** (events)
-- **GitHub API** (Octokit for project metadata)
-- **Genkit** (Google AI integration)
+- **Google Sheets API** (jobs data)
+
+## Data Sources
+
+- **Interview Questions**: JSON from https://github.com/arcadep0156/interview-questions
+  - Fetched at build time from raw.githubusercontent.com
+  - Schema validation with meta/schema.json
+  - Auto-rebuild on repo updates via repository_dispatch
+- **Contributors**: JSON from interview-questions/contributors.json
+- **Projects**: GitHub repositories with metadata
+- **Events**: Google Calendar API
+- **Jobs**: Google Sheets
 
 ## Dev Tools
 
 - **Turbopack** for fast dev builds
 - **Husky** + **Commitizen** for commit conventions
 - **Commitlint** for enforcing Conventional Commits
-- **tsx** for running TypeScript scripts
+- **Super-Linter** for code quality (GitHub Actions)
 
 ## Common Commands
 
 ```bash
 # Development
 npm run dev              # Start dev server with Turbopack
-npm run build            # Production build
-npm run start            # Start production server
+npm run build            # Production static export
 npm run lint             # ESLint check
-npm run typecheck        # TypeScript validation
 
 # Commits
 npm run commit           # Interactive Commitizen prompt
-npm run lint:commits     # Validate commit messages
-
-# AI/Genkit
-npm run genkit:dev       # Start Genkit dev UI
-npm run genkit:watch     # Genkit with auto-reload
-
-# Utilities
-npm run env:check        # Validate environment variables
-npm run test:sheets      # Test Google Sheets connection
 ```
 
 ## Build Configuration
 
 - Path alias: `@/*` maps to `./src/*`
+- Static export: `output: 'export'`
+- basePath: `/community-website` (for GitHub Pages)
+  - Remove when using custom domain
+- Image optimization: unoptimized for static export
 - Bundle splitting: vendors, UI components separated
-- Image optimization: WebP/AVIF formats
-- Security headers configured in next.config.ts
-- Server-side packages: Genkit, Google AI externalized
+
+## Deployment
+
+- **Platform**: GitHub Pages
+- **Workflow**: `.github/workflows/deploy.yml`
+- **Triggers**: 
+  - Push to main
+  - Hourly cron (fresh data)
+  - Manual dispatch
+  - Repository dispatch from interview-questions repo
+- **Build**: Static export to `out/` directory
+- **CNAME**: community.trainwithshubham.com
