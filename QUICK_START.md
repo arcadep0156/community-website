@@ -122,6 +122,8 @@ Visit: <http://localhost:3000/interview-questions>
 - ✅ Filters work
 - ✅ Export CSV works
 - ✅ Refresh works
+- ✅ "Show More Companies" button loads additional companies
+- ✅ Companies are collapsed by default (click to expand)
 
 ### 2. Check Homepage
 
@@ -197,6 +199,7 @@ npm run build
 | Filters | ✅ Working | All 6 filters |
 | Export | ✅ Working | CSV download |
 | Refresh | ✅ Working | Manual refresh |
+| Lazy Loading | ✅ Optimized | Progressive company rendering |
 | Error Handling | ✅ Added | Error Boundary |
 | Rate Limiting | ✅ Added | 60 req/hour |
 | Caching | ✅ Optimized | 1-hour revalidation |

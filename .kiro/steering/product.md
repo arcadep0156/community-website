@@ -7,7 +7,7 @@ TrainWithShubham Community Hub - a Next.js platform for DevOps, Cloud, and DevSe
 - **Events**: Google Calendar integration for community events
 - **Community Heroes**: Recognition program with three-tier achievement system
 - **Projects**: Searchable catalog with difficulty levels, tech tags, and README viewers
-- **Interview Questions**: JSON-based Q&A from GitHub repo with pagination, search, and filters
+- **Interview Questions**: JSON-based Q&A from GitHub repo with lazy loading, search, and filters
 - **Contributors**: Leaderboard with pagination, search, and LinkedIn integration
 - **Jobs**: Community job board
 

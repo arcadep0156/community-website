@@ -61,7 +61,9 @@ Comprehensive Q&A for DevOps/Cloud interviews
 - 🔍 Advanced filtering (company, year, role, experience, topic)
 - 📊 CSV export functionality
 - 🔄 Real-time refresh from GitHub repository
-- 📦 Powered by GitHub CSV (no database required)
+- 🚀 Lazy loading per company (progressive rendering)
+- 📦 Optimized performance with collapsible company sections
+- 📦 Powered by GitHub JSON (no database required)
 
 </td>
 </tr>
@@ -93,6 +95,7 @@ Beautiful, accessible interface
 - **⚡ Lightning Fast** - Fully static site generation, no server required
 - **🔄 Auto-Updates** - Hourly rebuilds fetch fresh data automatically
 - **🔍 Smart Search** - Client-side fuzzy search with Fuse.js
+- **🚀 Lazy Loading** - Progressive company rendering for optimal performance
 - **📦 Optimized Bundles** - 30%+ size reduction through code splitting
 - **🧪 Test Coverage** - Property-based testing with fast-check
 - **🎨 Component Library** - Shadcn/ui with Radix UI primitives
@@ -300,11 +303,13 @@ GitHub Actions workflow handles:
 - ✅ Hourly scheduled rebuilds for fresh data
 - ✅ Manual deployment via GitHub Actions UI
 
-#### Client-Side Search
+#### Client-Side Search & Lazy Loading
 Fuse.js provides fuzzy search without server infrastructure:
 - ⚡ Instant results
 - 🎯 Typo-tolerant matching
 - 📦 Minimal bundle impact
+- 🚀 Progressive company loading (5 → 10 → 15...)
+- 📂 Collapsible company sections for optimal DOM rendering
 
 ---
 

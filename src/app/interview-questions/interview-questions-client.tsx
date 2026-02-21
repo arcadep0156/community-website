@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { Search, AlertCircle, Download, RefreshCw, Loader2, Award } from 'lucide-react';
+import { Search, AlertCircle, Download, RefreshCw, Loader2, Award, ChevronDown, ChevronUp } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { InterviewQuestionCard } from '@/components/interview/interview-question-card';
 import { QuestionFilters, type FilterState } from '@/components/interview/question-filters';
 import type { InterviewQuestion } from '@/services/github-json';
@@ -24,11 +25,14 @@ interface InterviewQuestionsNewClientProps {
   };
 }
 
+const ITEMS_PER_PAGE = 10;
+const INITIAL_COMPANIES_TO_SHOW = 5;
+
 export function InterviewQuestionsNewClient({ 
   questions: initialQuestions, 
   filterOptions: initialFilterOptions 
 }: InterviewQuestionsNewClientProps) {
-  const [questions, setQuestions] = useState<InterviewQuestion[]>(initialQuestions);
+  const [allQuestions, setAllQuestions] = useState<InterviewQuestion[]>(initialQuestions);
   const [filterOptions, setFilterOptions] = useState(initialFilterOptions);
   const [isLoading, setIsLoading] = useState(initialQuestions.length === 0);
   const [searchQuery, setSearchQuery] = useState('');
@@ -42,11 +46,13 @@ export function InterviewQuestionsNewClient({
   });
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const questionsPerPage = 10;
+  
+  // Lazy rendering state
+  const [visibleCompaniesCount, setVisibleCompaniesCount] = useState(INITIAL_COMPANIES_TO_SHOW);
+  const [expandedCompanies, setExpandedCompanies] = useState<Set<string>>(new Set());
 
-  // Fetch questions on mount if not provided
   useEffect(() => {
-    if (questions.length === 0) {
+    if (allQuestions.length === 0) {
       loadQuestions();
     }
   }, []);
@@ -55,7 +61,7 @@ export function InterviewQuestionsNewClient({
     try {
       setIsLoading(true);
       const fetchedQuestions = await getAllInterviewQuestions();
-      setQuestions(fetchedQuestions);
+      setAllQuestions(fetchedQuestions);
       setFilterOptions(getFilterOptions(fetchedQuestions));
     } catch (error) {
       console.error('Failed to load questions:', error);
@@ -64,46 +70,31 @@ export function InterviewQuestionsNewClient({
     }
   };
 
-  // Manual refresh handler with minimum delay for better UX
   const handleManualRefresh = async () => {
     setIsRefreshing(true);
-    // Minimum 1 second delay so spinner is visible
-    const [result] = await Promise.all([
+    await Promise.all([
       loadQuestions(),
       new Promise(resolve => setTimeout(resolve, 1000))
     ]);
     setIsRefreshing(false);
   };
 
-  // Create Fuse instance for fuzzy search
   const fuse = useMemo(() => {
-    return new Fuse(questions, {
+    return new Fuse(allQuestions, {
       keys: ['question', 'topic', 'company', 'role'],
       threshold: 0.3,
       ignoreLocation: true,
     });
-  }, [questions]);
+  }, [allQuestions]);
 
-  // Apply filters and search
   const filteredQuestions = useMemo(() => {
-    let result = questions;
+    let result = allQuestions;
 
-    // Apply filters first
-    if (filters.company) {
-      result = result.filter(q => q.company === filters.company);
-    }
-    if (filters.year) {
-      result = result.filter(q => q.year === filters.year);
-    }
-    if (filters.role) {
-      result = result.filter(q => q.role === filters.role);
-    }
-    if (filters.experience) {
-      result = result.filter(q => q.experience === filters.experience);
-    }
-    if (filters.topic) {
-      result = result.filter(q => q.topic === filters.topic);
-    }
+    if (filters.company) result = result.filter(q => q.company === filters.company);
+    if (filters.year) result = result.filter(q => q.year === filters.year);
+    if (filters.role) result = result.filter(q => q.role === filters.role);
+    if (filters.experience) result = result.filter(q => q.experience === filters.experience);
+    if (filters.topic) result = result.filter(q => q.topic === filters.topic);
     if (filters.contributor) {
       result = result.filter(q => {
         const contributorGithub = typeof q.contributor === 'string' 
@@ -113,9 +104,7 @@ export function InterviewQuestionsNewClient({
       });
     }
 
-    // Apply search using memoized Fuse instance (performance optimization)
     if (searchQuery.trim()) {
-      // Create a new Fuse instance with filtered results
       const filteredFuse = new Fuse(result, {
         keys: ['question', 'topic', 'company', 'role'],
         threshold: 0.3,
@@ -125,20 +114,56 @@ export function InterviewQuestionsNewClient({
     }
 
     return result;
-  }, [questions, filters, searchQuery]);
+  }, [allQuestions, filters, searchQuery]);
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredQuestions.length / questionsPerPage);
-  const paginatedQuestions = useMemo(() => {
-    const startIndex = (currentPage - 1) * questionsPerPage;
-    const endIndex = startIndex + questionsPerPage;
-    return filteredQuestions.slice(startIndex, endIndex);
-  }, [filteredQuestions, currentPage, questionsPerPage]);
+  const allQuestionsByCompany = useMemo(() => {
+    const grouped: Record<string, InterviewQuestion[]> = {};
+    filteredQuestions.forEach(q => {
+      if (!grouped[q.company]) grouped[q.company] = [];
+      grouped[q.company].push(q);
+    });
+    return grouped;
+  }, [filteredQuestions]);
+
+  const allCompanies = Object.keys(allQuestionsByCompany).sort();
+  const visibleCompanies = allCompanies.slice(0, visibleCompaniesCount);
+  const hasMoreCompanies = visibleCompaniesCount < allCompanies.length;
+
+  // Get questions from visible companies only
+  const visibleQuestions = useMemo(() => {
+    return filteredQuestions.filter(q => visibleCompanies.includes(q.company));
+  }, [filteredQuestions, visibleCompanies]);
+
+  // Group visible questions by company - show ALL visible companies
+  const questionsByCompany = useMemo(() => {
+    const grouped: Record<string, InterviewQuestion[]> = {};
+    visibleQuestions.forEach(q => {
+      if (!grouped[q.company]) grouped[q.company] = [];
+      grouped[q.company].push(q);
+    });
+    return grouped;
+  }, [visibleQuestions]);
 
   // Reset to page 1 when filters or search changes
   useEffect(() => {
     setCurrentPage(1);
   }, [filters, searchQuery]);
+
+  const loadMoreCompanies = useCallback(() => {
+    setVisibleCompaniesCount(prev => Math.min(prev + 5, allCompanies.length));
+  }, [allCompanies.length]);
+
+  const toggleCompanyExpansion = useCallback((company: string) => {
+    setExpandedCompanies(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(company)) {
+        newSet.delete(company);
+      } else {
+        newSet.add(company);
+      }
+      return newSet;
+    });
+  }, []);
 
   const handleExport = () => {
     const csv = [
@@ -151,14 +176,9 @@ export function InterviewQuestionsNewClient({
           ? '' 
           : (q.contributor.linkedin || '');
         return [
-          q.company, 
-          q.year, 
-          q.role, 
-          q.experience, 
-          q.topic, 
+          q.company, q.year, q.role, q.experience, q.topic, 
           `"${q.question.replace(/"/g, '""')}"`, 
-          contributorName,
-          contributorLinkedIn
+          contributorName, contributorLinkedIn
         ].join(',');
       }),
     ].join('\n');
@@ -176,7 +196,6 @@ export function InterviewQuestionsNewClient({
 
   return (
     <div className="space-y-6">
-      {/* Loading State */}
       {isLoading && (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -184,7 +203,6 @@ export function InterviewQuestionsNewClient({
         </div>
       )}
 
-      {/* Header Section */}
       {!isLoading && (
       <div className="space-y-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -195,13 +213,8 @@ export function InterviewQuestionsNewClient({
             </p>
           </div>
           <div className="flex gap-2">
-            <Button 
-              onClick={handleManualRefresh} 
-              variant="outline" 
-              className="gap-2"
-              disabled={isRefreshing}
-            >
-              <RefreshCw className={`h-4 w-4 transition-transform ${isRefreshing ? 'animate-spin-slow' : ''}`} />
+            <Button onClick={handleManualRefresh} variant="outline" className="gap-2" disabled={isRefreshing}>
+              <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
               {isRefreshing ? 'Refreshing...' : 'Refresh'}
             </Button>
             <Button onClick={handleExport} variant="outline" className="gap-2">
@@ -217,10 +230,9 @@ export function InterviewQuestionsNewClient({
           </div>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="p-4 bg-primary/5 rounded-lg border">
-            <div className="text-2xl font-bold text-primary">{questions.length}</div>
+            <div className="text-2xl font-bold text-primary">{allQuestions.length}</div>
             <div className="text-sm text-muted-foreground">Total Questions</div>
           </div>
           <div className="p-4 bg-primary/5 rounded-lg border">
@@ -232,12 +244,11 @@ export function InterviewQuestionsNewClient({
             <div className="text-sm text-muted-foreground">Topics</div>
           </div>
           <div className="p-4 bg-primary/5 rounded-lg border">
-            <div className="text-2xl font-bold text-primary">{filterOptions.contributors.length}</div>
-            <div className="text-sm text-muted-foreground">Contributors</div>
+            <div className="text-2xl font-bold text-primary">{visibleCompaniesCount}/{allCompanies.length}</div>
+            <div className="text-sm text-muted-foreground">Companies Shown</div>
           </div>
         </div>
 
-        {/* Search Bar */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -251,24 +262,28 @@ export function InterviewQuestionsNewClient({
       </div>
       )}
 
-      {/* Filters */}
       {!isLoading && (
       <>
-      <QuestionFilters
-        filters={filters}
-        onFilterChange={setFilters}
-        filterOptions={filterOptions}
-      />
+      <QuestionFilters filters={filters} onFilterChange={setFilters} filterOptions={filterOptions} />
 
-      {/* Results */}
       <div>
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
           <p className="text-sm text-muted-foreground">
-            Showing <strong>{filteredQuestions.length}</strong> of <strong>{questions.length}</strong> questions
+            Showing <strong>{Object.keys(questionsByCompany).length}</strong> companies with <strong>{visibleQuestions.length}</strong> questions
+            {hasMoreCompanies && (
+              <span className="text-xs block mt-1">
+                ({allCompanies.length - visibleCompaniesCount} more companies available)
+              </span>
+            )}
           </p>
+          {hasMoreCompanies && (
+            <Button onClick={loadMoreCompanies} variant="outline" size="sm">
+              Show More Companies ({allCompanies.length - visibleCompaniesCount} hidden)
+            </Button>
+          )}
         </div>
 
-        {filteredQuestions.length === 0 ? (
+        {visibleCompanies.length === 0 ? (
           <Alert variant="destructive" className="border-destructive bg-destructive/10">
             <AlertCircle className="h-4 w-4 text-destructive" />
             <AlertTitle className="text-destructive">No Results Found</AlertTitle>
@@ -276,61 +291,53 @@ export function InterviewQuestionsNewClient({
               {searchQuery
                 ? `No questions match your search for "${searchQuery}". Try different keywords or clear filters.`
                 : 'No questions match your selected filters. Try adjusting or clearing some filters.'}
+              {hasMoreCompanies && ' You can also show more companies to see additional questions.'}
             </AlertDescription>
           </Alert>
         ) : (
           <>
-            <div className="space-y-4">
-              {paginatedQuestions.map((question, index) => (
-                <InterviewQuestionCard
-                  key={`${question.company}-${question.year}-${index}`}
-                  question={question}
-                  index={(currentPage - 1) * questionsPerPage + index}
-                />
+            <div className="space-y-6">
+              {Object.entries(questionsByCompany).map(([company, questions]) => (
+                <div key={company} className="border rounded-lg p-4">
+                  <div 
+                    className="flex items-center justify-between cursor-pointer hover:bg-accent/10 p-2 rounded-lg transition-colors"
+                    onClick={() => toggleCompanyExpansion(company)}
+                  >
+                    <h2 className="text-xl font-semibold text-primary flex items-center gap-2">
+                      {company}
+                      <Badge variant="secondary">
+                        {allQuestionsByCompany[company]?.length || questions.length} questions
+                      </Badge>
+                    </h2>
+                    {expandedCompanies.has(company) ? (
+                      <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                    ) : (
+                      <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                    )}
+                  </div>
+
+                  {expandedCompanies.has(company) ? (
+                    <div className="mt-4 space-y-4">
+                      {questions.map((question, index) => (
+                        <InterviewQuestionCard
+                          key={`${question.company}-${question.year}-${index}`}
+                          question={question}
+                          index={index}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground italic pl-2 mt-2">
+                      Click to expand and view questions
+                    </p>
+                  )}
+                </div>
               ))}
             </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-2 mt-8">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                >
-                  Previous
-                </Button>
-                
-                <div className="flex gap-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                    <Button
-                      key={page}
-                      variant={currentPage === page ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setCurrentPage(page)}
-                      className="min-w-[40px]"
-                    >
-                      {page}
-                    </Button>
-                  ))}
-                </div>
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
-                >
-                  Next
-                </Button>
-              </div>
-            )}
           </>
         )}
       </div>
 
-      {/* Contribution CTA */}
       <Alert className="border-primary/20 bg-primary/5">
         <AlertCircle className="h-4 w-4 text-primary" />
         <AlertTitle className="text-foreground font-semibold">Want to Contribute?</AlertTitle>
